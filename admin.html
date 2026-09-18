@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Dashboard - Smart Canteen</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f4f4;
+            color: #333;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+
+        header h1 {
+            margin-bottom: 5px;
+        }
+
+
+        header h3 {
+            font-weight: normal;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            width: 94%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+
+        /* =========================
+           GENERAL CARD
+        ========================= */
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+
+        .card h2 {
+            color: #ff6600;
+            margin-bottom: 10px;
+        }
+
+
+        .card p {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+
+        .refresh-btn {
+            background: #0d6efd;
+        }
+
+
+        .logout {
+            background: #dc3545;
+        }
+
+
+        .logout:hover {
+            background: #bb2d3b;
+        }
+
+
+        .preparing-btn {
+            background: #0d6efd;
+        }
+
+
+        .ready-btn {
+            background: #198754;
+        }
+
+
+        .completed-btn {
+            background: #6c757d;
+        }
+
+
+        .cancel-btn {
+            background: #dc3545;
+        }
+
+
+        .time-btn {
+            background: #6f42c1;
+        }
+
+
+        /* =========================
+           ORDERS SECTION
+        ========================= */
+
+        #ordersSection {
+            display: none;
+        }
+
+
+        .order-card {
+            border: 1px solid #ddd;
+            border-left: 6px solid #ff6600;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 18px;
+            background: #fafafa;
+        }
+
+
+        /* =========================
+           ORDER HEADER
+        ========================= */
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .order-id {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+
+
+        .student-id {
+            margin-top: 5px;
+            color: #555;
+        }
+
+
+        .order-time {
+            margin-top: 5px;
+            color: #777;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           FCFS
+        ========================= */
+
+        .fcfs {
+            display: inline-block;
+
+            background: #333;
+            color: white;
+
+            padding: 7px 12px;
+
+            border-radius: 15px;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           ORDER DETAILS
+        ========================= */
+
+        .order-details {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(170px, 1fr));
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .detail {
+            background: white;
+
+            padding: 12px;
+
+            border-radius: 6px;
+
+            border: 1px solid #ddd;
+        }
+
+
+        .detail strong {
+            display: block;
+
+            color: #777;
+
+            font-size: 13px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .detail span {
+            color: #333;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           STATUS BADGES
+        ========================= */
+
+        .status {
+            display: inline-block;
+
+            padding: 6px 12px;
+
+            border-radius: 15px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+
+        .status-preparing {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+
+        .status-ready {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+
+        .status-completed {
+            background: #d3d3d3;
+            color: #333;
+        }
+
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+
+        /* =========================
+           ITEMS
+        ========================= */
+
+        .items-title {
+            font-size: 19px;
+
+            font-weight: bold;
+
+            color: #333;
+
+            margin: 20px 0 12px;
+        }
+
+
+        .item-card {
+            background: white;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 18px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .item-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            margin-bottom: 12px;
+        }
+
+
+        .item-name {
+            font-size: 18px;
+
+            font-weight: bold;
+
+            color: #333;
+        }
+
+
+        .item-info {
+            margin-top: 5px;
+
+            color: #666;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           ITEM ACTIONS
+        ========================= */
+
+        .item-actions-title {
+            font-size: 14px;
+
+            font-weight: bold;
+
+            color: #555;
+
+            margin-bottom: 8px;
+        }
+
+
+        .item-buttons {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+        }
+
+
+        .item-buttons button {
+            padding: 8px 13px;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           ESTIMATED TIME
+        ========================= */
+
+        .estimated-section {
+            background: white;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 18px;
+
+            margin-top: 20px;
+        }
+
+
+        .estimated-section h4 {
+            margin-bottom: 7px;
+
+            color: #333;
+        }
+
+
+        .estimated-section p {
+            font-size: 14px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .estimated-controls {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .estimated-controls input {
+            padding: 10px;
+
+            width: 170px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 5px;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           TOTAL
+        ========================= */
+
+        .order-total {
+            border-top: 1px solid #ddd;
+
+            margin-top: 18px;
+
+            padding-top: 15px;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            text-align: right;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            padding: 12px;
+
+            border-radius: 6px;
+
+            margin-bottom: 15px;
+
+            display: none;
+        }
+
+
+        .success {
+            background: #d1e7dd;
+
+            color: #0f5132;
+        }
+
+
+        .error {
+            background: #f8d7da;
+
+            color: #842029;
+        }
+
+
+        /* =========================
+           NO ORDERS
+        ========================= */
+
+        .no-orders {
+            text-align: center;
+
+            padding: 40px 20px;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 95%;
+            }
+
+
+            .order-header {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .item-header {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .item-buttons {
+                flex-direction: column;
+            }
+
+
+            .item-buttons button {
+                width: 100%;
+            }
+
+
+            .estimated-controls {
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+
+            .estimated-controls input,
+            .estimated-controls button {
+                width: 100%;
+            }
+
+
+            .order-total {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <img
+        src="{{ url_for(
+            'static',
+            filename='images/logo.jpeg'
+        ) }}"
+        class="logo"
+        alt="College Logo"
+    >
+
+
+    <h1>
+        🍽 Smart Canteen
+    </h1>
+
+
+    <h3>
+        Admin Dashboard
+    </h3>
+
+</header>
+
+
+
+<div class="container">
+
+
+    <!-- =========================
+         ORDER MANAGEMENT
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            📦 Order Management
+        </h2>
+
+
+        <p>
+            Orders are displayed according to
+            First Come, First Serve (FCFS).
+            Each cart is treated as one order.
+        </p>
+
+
+        <button
+            class="refresh-btn"
+            onclick="loadOrders()"
+        >
+            🔄 View / Refresh Orders
+        </button>
+
+    </div>
+
+
+
+    <!-- =========================
+         MESSAGE
+    ========================= -->
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+
+    <!-- =========================
+         ORDERS SECTION
+    ========================= -->
+
+    <div
+        id="ordersSection"
+        class="card"
+    >
+
+        <h2>
+            📋 Orders Queue
+        </h2>
+
+
+        <p>
+            Oldest pending orders are processed first.
+        </p>
+
+
+        <div id="ordersContainer">
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         FACULTY DELIVERY
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            🚚 Faculty Delivery Orders
+        </h2>
+
+
+        <p>
+            View and manage faculty delivery requests.
+        </p>
+
+
+        <button
+            onclick="
+                alert(
+                    'Faculty delivery feature will be added later.'
+                )
+            "
+        >
+            View Deliveries
+        </button>
+
+    </div>
+
+
+
+    <!-- =========================
+         MANAGE MENU
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            🍽 Manage Menu
+        </h2>
+
+
+        <p>
+            Add, edit, remove, or mark food items unavailable.
+        </p>
+
+
+        <button
+            onclick="
+                alert(
+                    'Menu management feature will be added later.'
+                )
+            "
+        >
+            Manage Menu
+        </button>
+
+    </div>
+
+
+
+    <!-- =========================
+         LOGOUT
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            🚪 Logout
+        </h2>
+
+
+        <p>
+            Return to the Home Page.
+        </p>
+
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            Logout
+        </button>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* ========================================================
+   LOAD ORDERS
+======================================================== */
+
+async function loadOrders() {
+
+
+    const ordersSection =
+        document.getElementById(
+            "ordersSection"
+        );
+
+
+    const ordersContainer =
+        document.getElementById(
+            "ordersContainer"
+        );
+
+
+    ordersSection.style.display =
+        "block";
+
+
+    ordersContainer.innerHTML = `
+
+        <p>
+            ⏳ Loading orders...
+        </p>
+
+    `;
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "{{ url_for('admin_orders') }}"
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+
+            ordersContainer.innerHTML = `
+
+                <div class="no-orders">
+
+                    <h3>
+                        ⚠ Unable to Load Orders
+                    </h3>
+
+                    <p>
+                        ${
+                            result.message ||
+                            "Please try again."
+                        }
+                    </p>
+
+                </div>
+
+            `;
+
+
+            showMessage(
+                result.message ||
+                "Unable to load orders.",
+                "error"
+            );
+
+
+            return;
+
+        }
+
+
+        displayOrders(
+            result.orders
+        );
+
+
+    }
+    catch (error) {
+
+
+        console.error(error);
+
+
+        ordersContainer.innerHTML = `
+
+            <div class="no-orders">
+
+                <h3>
+                    ⚠ Connection Error
+                </h3>
+
+                <p>
+                    Unable to connect to Flask server.
+                </p>
+
+            </div>
+
+        `;
+
+
+        showMessage(
+            "Unable to connect to the server.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* ========================================================
+   DISPLAY ORDERS
+======================================================== */
+
+function displayOrders(orders) {
+
+
+    const container =
+        document.getElementById(
+            "ordersContainer"
+        );
+
+
+    if (
+        !orders ||
+        orders.length === 0
+    ) {
+
+
+        container.innerHTML = `
+
+            <div class="no-orders">
+
+                <h3>
+                    📭 No Orders Found
+                </h3>
+
+                <p>
+                    There are currently no orders.
+                </p>
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    orders.forEach(
+        function(order, index) {
+
+
+            /* =========================
+               ORDER STATUS CLASS
+            ========================= */
+
+            const orderStatusClass =
+                getStatusClass(
+                    order.status
+                );
+
+
+
+            /* =========================
+               FCFS POSITION
+            ========================= */
+
+            let fcfsHTML = "";
+
+
+            if (
+                order.status === "Pending"
+            ) {
+
+
+                fcfsHTML = `
+
+                    <span class="fcfs">
+
+                        FCFS Position #${index + 1}
+
+                    </span>
+
+                `;
+
+            }
+
+
+
+            /* =========================
+               ITEMS HTML
+            ========================= */
+
+            let itemsHTML = "";
+
+
+            if (
+                order.items &&
+                order.items.length > 0
+            ) {
+
+
+                order.items.forEach(
+                    function(item) {
+
+
+                        const itemStatusClass =
+                            getStatusClass(
+                                item.status
+                            );
+
+
+                        itemsHTML += `
+
+                            <div class="item-card">
+
+
+                                <div class="item-header">
+
+
+                                    <div>
+
+                                        <div class="item-name">
+
+                                            🍽
+                                            ${escapeHTML(
+                                                item.food_item
+                                            )}
+
+                                        </div>
+
+
+                                        <div class="item-info">
+
+                                            Quantity:
+                                            <strong>
+                                                ${item.quantity}
+                                            </strong>
+
+                                            &nbsp; | &nbsp;
+
+                                            Price:
+                                            <strong>
+                                                ₹${Number(
+                                                    item.price
+                                                ).toFixed(2)}
+                                            </strong>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span
+                                            class="
+                                                status
+                                                ${itemStatusClass}
+                                            "
+                                        >
+
+                                            ${escapeHTML(
+                                                item.status
+                                            )}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="item-actions-title">
+
+                                    Update this item's status:
+
+                                </div>
+
+
+                                <div class="item-buttons">
+
+
+                                    <button
+                                        class="preparing-btn"
+                                        onclick="
+                                            updateItemStatus(
+                                                ${item.id},
+                                                'Preparing'
+                                            )
+                                        "
+                                    >
+
+                                        🔵 Preparing
+
+                                    </button>
+
+
+                                    <button
+                                        class="ready-btn"
+                                        onclick="
+                                            updateItemStatus(
+                                                ${item.id},
+                                                'Ready'
+                                            )
+                                        "
+                                    >
+
+                                        ✅ Mark Ready
+
+                                    </button>
+
+
+                                    <button
+                                        class="completed-btn"
+                                        onclick="
+                                            updateItemStatus(
+                                                ${item.id},
+                                                'Completed'
+                                            )
+                                        "
+                                    >
+
+                                        ✔ Completed
+
+                                    </button>
+
+
+                                    <button
+                                        class="cancel-btn"
+                                        onclick="
+                                            updateItemStatus(
+                                                ${item.id},
+                                                'Cancelled'
+                                            )
+                                        "
+                                    >
+
+                                        ❌ Cancel
+
+                                    </button>
+
+
+                                </div>
+
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+            }
+            else {
+
+
+                itemsHTML = `
+
+                    <p>
+                        No individual items found
+                        for this order.
+                    </p>
+
+                `;
+
+            }
+
+
+
+            /* =========================
+               ESTIMATED TIME
+            ========================= */
+
+            const estimatedTime =
+                order.estimated_time
+                ?
+                order.estimated_time
+                :
+                "";
+
+
+            const estimatedDisplay =
+                order.estimated_time
+                ?
+                order.estimated_time +
+                " minutes"
+                :
+                "Not set";
+
+
+
+            /* =========================
+               ORDER CARD
+            ========================= */
+
+            html += `
+
+                <div class="order-card">
+
+
+                    <!-- ORDER HEADER -->
+
+                    <div class="order-header">
+
+
+                        <div>
+
+                            <div class="order-id">
+
+                                Order #${order.id}
+
+                            </div>
+
+
+                            <div class="student-id">
+
+                                Student ID:
+                                <strong>
+
+                                    ${escapeHTML(
+                                        order.college_id
+                                    )}
+
+                                </strong>
+
+                            </div>
+
+
+                            <div class="order-time">
+
+                                🕒 Order Time:
+                                ${escapeHTML(
+                                    order.order_time
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            ${fcfsHTML}
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- ORDER DETAILS -->
+
+                    <div class="order-details">
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Total Items
+                            </strong>
+
+                            <span>
+
+                                ${
+                                    order.items
+                                    ?
+                                    order.items.length
+                                    :
+                                    0
+                                }
+
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Total Quantity
+                            </strong>
+
+                            <span>
+
+                                ${
+                                    order.quantity || 0
+                                }
+
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Total Price
+                            </strong>
+
+                            <span>
+
+                                ₹${Number(
+                                    order.total_price
+                                ).toFixed(2)}
+
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Overall Status
+                            </strong>
+
+                            <span
+                                class="
+                                    status
+                                    ${orderStatusClass}
+                                "
+                            >
+
+                                ${escapeHTML(
+                                    order.status
+                                )}
+
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="detail">
+
+                            <strong>
+                                Estimated Time
+                            </strong>
+
+                            <span>
+
+                                ${estimatedDisplay}
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- ITEMS -->
+
+                    <div class="items-title">
+
+                        🍽 Items in Order #${order.id}
+
+                    </div>
+
+
+                    ${itemsHTML}
+
+
+
+                    <!-- ESTIMATED TIME -->
+
+                    <div class="estimated-section">
+
+
+                        <h4>
+
+                            ⏱ Estimated Preparation Time
+
+                        </h4>
+
+
+                        <p>
+
+                            The admin sets the estimated
+                            preparation time for this order.
+
+                        </p>
+
+
+                        <div class="estimated-controls">
+
+
+                            <input
+                                type="number"
+                                id="time-${order.id}"
+                                min="1"
+                                placeholder="Minutes"
+                                value="${estimatedTime}"
+                            >
+
+
+                            <button
+                                class="time-btn"
+                                onclick="
+                                    updateEstimatedTime(
+                                        ${order.id}
+                                    )
+                                "
+                            >
+
+                                ⏱ Set Estimated Time
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- TOTAL -->
+
+                    <div class="order-total">
+
+                        💰 Total:
+                        ₹${Number(
+                            order.total_price
+                        ).toFixed(2)}
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+
+/* ========================================================
+   UPDATE INDIVIDUAL ITEM STATUS
+======================================================== */
+
+async function updateItemStatus(
+    itemId,
+    status
+) {
+
+
+    let confirmationMessage =
+        "Change item status to " +
+        status +
+        "?";
+
+
+    if (
+        status === "Ready"
+    ) {
+
+        confirmationMessage =
+            "Mark this food item as READY?";
+
+    }
+
+
+    if (
+        status === "Completed"
+    ) {
+
+        confirmationMessage =
+            "Mark this food item as COMPLETED?";
+
+    }
+
+
+    if (
+        status === "Cancelled"
+    ) {
+
+        confirmationMessage =
+            "Cancel this food item?";
+
+    }
+
+
+    if (
+        !confirm(
+            confirmationMessage
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "{{ url_for('update_order_item') }}",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        item_id:
+                            itemId,
+
+                        status:
+                            status
+
+                    })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            response.ok &&
+            result.success
+        ) {
+
+
+            showMessage(
+                "Item status changed to " +
+                status +
+                ".",
+                "success"
+            );
+
+
+            loadOrders();
+
+        }
+        else {
+
+
+            showMessage(
+                result.message ||
+                "Unable to update item.",
+                "error"
+            );
+
+        }
+
+
+    }
+    catch (error) {
+
+
+        console.error(error);
+
+
+        showMessage(
+            "Error updating item status.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* ========================================================
+   UPDATE ESTIMATED TIME
+======================================================== */
+
+async function updateEstimatedTime(
+    orderId
+) {
+
+
+    const input =
+        document.getElementById(
+            "time-" + orderId
+        );
+
+
+    if (!input) {
+
+        return;
+
+    }
+
+
+    const time =
+        input.value;
+
+
+    if (
+        !time ||
+        Number(time) <= 0
+    ) {
+
+
+        showMessage(
+            "Please enter a valid time in minutes.",
+            "error"
+        );
+
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "{{ url_for('update_order') }}",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        order_id:
+                            orderId,
+
+                        estimated_time:
+                            Number(time)
+
+                    })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            response.ok &&
+            result.success
+        ) {
+
+
+            showMessage(
+                "Estimated time updated successfully.",
+                "success"
+            );
+
+
+            loadOrders();
+
+        }
+        else {
+
+
+            showMessage(
+                result.message ||
+                "Unable to update estimated time.",
+                "error"
+            );
+
+        }
+
+
+    }
+    catch (error) {
+
+
+        console.error(error);
+
+
+        showMessage(
+            "Error updating estimated time.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* ========================================================
+   STATUS CLASS
+======================================================== */
+
+function getStatusClass(
+    status
+) {
+
+
+    if (
+        status === "Preparing"
+    ) {
+
+        return "status-preparing";
+
+    }
+
+
+    if (
+        status === "Ready"
+    ) {
+
+        return "status-ready";
+
+    }
+
+
+    if (
+        status === "Completed"
+    ) {
+
+        return "status-completed";
+
+    }
+
+
+    if (
+        status === "Cancelled"
+    ) {
+
+        return "status-cancelled";
+
+    }
+
+
+    return "status-pending";
+
+}
+
+
+
+/* ========================================================
+   MESSAGE
+======================================================== */
+
+function showMessage(
+    message,
+    type
+) {
+
+
+    const element =
+        document.getElementById(
+            "message"
+        );
+
+
+    element.textContent =
+        message;
+
+
+    element.className =
+        "message " + type;
+
+
+    element.style.display =
+        "block";
+
+
+    setTimeout(
+        function() {
+
+            element.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+
+
+/* ========================================================
+   HTML ESCAPE
+======================================================== */
+
+function escapeHTML(
+    value
+) {
+
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* ========================================================
+   LOGOUT
+======================================================== */
+
+function logout() {
+
+
+    if (
+        confirm(
+            "Do you want to logout?"
+        )
+    ) {
+
+
+        window.location.href =
+            "{{ url_for('logout') }}";
+
+    }
+
+}
+
+
+
+/* ========================================================
+   INITIAL LOAD
+======================================================== */
+
+loadOrders();
+
+
+</script>
+
+
+</body>
+
+</html>

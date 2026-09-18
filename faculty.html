@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Faculty Dashboard - Smart Canteen</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f4f4;
+            color: #333;
+        }
+
+
+        header {
+            background: #ff6600;
+            color: white;
+            text-align: center;
+            padding: 22px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+
+        .logo {
+            width: 110px;
+            height: auto;
+            margin-bottom: 8px;
+        }
+
+
+        header h1 {
+            margin-bottom: 5px;
+        }
+
+
+        header h3 {
+            font-weight: normal;
+        }
+
+
+        .container {
+            width: 92%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+
+        .welcome {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+        }
+
+
+        .welcome h2 {
+            color: #ff6600;
+            margin-bottom: 5px;
+        }
+
+
+        .welcome p {
+            color: #666;
+        }
+
+
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(200px, 1fr)
+            );
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+
+        .action-card {
+            background: white;
+            padding: 25px 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+        }
+
+
+        .action-card h2 {
+            color: #ff6600;
+            margin-bottom: 10px;
+        }
+
+
+        .action-card p {
+            color: #666;
+            min-height: 42px;
+            margin-bottom: 18px;
+        }
+
+
+        button {
+            padding: 11px 22px;
+            border: none;
+            border-radius: 7px;
+            background: #ff6600;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+
+        button:hover {
+            background: #e65c00;
+        }
+
+
+        .logout {
+            background: #d32f2f;
+        }
+
+
+        .logout:hover {
+            background: #b71c1c;
+        }
+
+
+        .orders-section {
+            margin-top: 10px;
+        }
+
+
+        .orders-section h2 {
+            color: #ff6600;
+            margin-bottom: 15px;
+        }
+
+
+        .refresh-button {
+            margin-bottom: 18px;
+        }
+
+
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+        }
+
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+
+        .order-header h3 {
+            color: #333;
+        }
+
+
+        .order-status {
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #eee;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+
+        .item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+
+        .item-name {
+            font-weight: bold;
+        }
+
+
+        .item-status {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+
+        .pending {
+            color: #f57c00;
+        }
+
+
+        .preparing {
+            color: #1976d2;
+        }
+
+
+        .ready {
+            color: #388e3c;
+        }
+
+
+        .completed {
+            color: #2e7d32;
+        }
+
+
+        .cancelled {
+            color: #d32f2f;
+        }
+
+
+        .order-info {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+
+
+        .order-info p {
+            margin: 5px 0;
+        }
+
+
+        .no-orders {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            color: #777;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+        }
+
+
+        .loading {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+            }
+
+            header {
+                padding: 18px;
+            }
+
+            .logo {
+                width: 90px;
+            }
+
+            .order-card {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <img
+        src="{{ url_for('static', filename='images/logo.jpeg') }}"
+        class="logo"
+        alt="College Logo"
+    >
+
+    <h1>🍽 Smart Canteen</h1>
+
+    <h3>Welcome Faculty 👋</h3>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- WELCOME -->
+
+    <div class="welcome">
+
+        <h2>Faculty Dashboard</h2>
+
+        <p>
+            Order food from the canteen and track your orders.
+        </p>
+
+    </div>
+
+
+    <!-- ACTION CARDS -->
+
+    <div class="actions">
+
+
+        <!-- MENU -->
+
+        <div class="action-card">
+
+            <h2>🍽 Menu</h2>
+
+            <p>
+                Browse available food items and place an order.
+            </p>
+
+            <button onclick="openMenu()">
+                Open Menu
+            </button>
+
+        </div>
+
+
+        <!-- CART -->
+
+        <div class="action-card">
+
+            <h2>🛒 Cart</h2>
+
+            <p>
+                View your selected food items and place your order.
+            </p>
+
+            <button onclick="openCart()">
+                Open Cart
+            </button>
+
+        </div>
+
+
+        <!-- ORDERS -->
+
+        <div class="action-card">
+
+            <h2>📦 My Orders</h2>
+
+            <p>
+                Track your current and previous orders.
+            </p>
+
+            <button onclick="loadOrders()">
+                View Orders
+            </button>
+
+        </div>
+
+
+        <!-- LOGOUT -->
+
+        <div class="action-card">
+
+            <h2>🚪 Logout</h2>
+
+            <p>
+                Return to the Home Page.
+            </p>
+
+            <button
+                class="logout"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ORDERS -->
+
+    <div class="orders-section">
+
+        <h2>📦 My Orders</h2>
+
+        <button
+            class="refresh-button"
+            onclick="loadOrders()"
+        >
+            🔄 Refresh Orders
+        </button>
+
+
+        <div id="ordersContainer">
+
+            <div class="loading">
+                Click "View Orders" to load your orders.
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    // ========================================================
+    // OPEN MENU
+    // ========================================================
+
+    function openMenu() {
+
+        window.location.href =
+            "{{ url_for('menu') }}";
+
+    }
+
+
+    // ========================================================
+    // OPEN CART
+    // ========================================================
+
+    function openCart() {
+
+        window.location.href =
+            "{{ url_for('cart') }}";
+
+    }
+
+
+    // ========================================================
+    // LOAD FACULTY ORDERS
+    // ========================================================
+
+    async function loadOrders() {
+
+        const container =
+            document.getElementById(
+                "ordersContainer"
+            );
+
+
+        container.innerHTML = `
+            <div class="loading">
+                Loading orders...
+            </div>
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "{{ url_for('faculty_orders') }}"
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!data.success) {
+
+                container.innerHTML = `
+                    <div class="no-orders">
+                        ${data.message}
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            const orders =
+                data.orders;
+
+
+            if (!orders || orders.length === 0) {
+
+                container.innerHTML = `
+                    <div class="no-orders">
+                        <h3>No Orders Yet</h3>
+                        <p>
+                            Your food orders will appear here.
+                        </p>
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            container.innerHTML = "";
+
+
+            orders.forEach(
+                function(order) {
+
+                    let itemsHTML = "";
+
+
+                    if (
+                        order.items &&
+                        order.items.length > 0
+                    ) {
+
+                        order.items.forEach(
+                            function(item) {
+
+                                const statusClass =
+                                    item.status
+                                        .toLowerCase()
+                                        .replace(
+                                            " ",
+                                            "-"
+                                        );
+
+
+                                itemsHTML += `
+
+                                    <div class="item">
+
+                                        <div class="item-row">
+
+                                            <div>
+
+                                                <span class="item-name">
+                                                    🍽 ${escapeHtml(
+                                                        item.food_item
+                                                    )}
+                                                </span>
+
+                                                × ${item.quantity}
+
+                                            </div>
+
+
+                                            <div
+                                                class="item-status ${statusClass}"
+                                            >
+                                                ${escapeHtml(
+                                                    item.status
+                                                )}
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                `;
+
+                            }
+                        );
+
+                    }
+
+
+                    const orderStatusClass =
+                        order.status
+                            .toLowerCase()
+                            .replace(
+                                " ",
+                                "-"
+                            );
+
+
+                    const estimated =
+                        order.estimated_time
+                        ? `${order.estimated_time} minutes`
+                        : "Not specified";
+
+
+                    container.innerHTML += `
+
+                        <div class="order-card">
+
+
+                            <div class="order-header">
+
+                                <h3>
+                                    Order #${order.id}
+                                </h3>
+
+
+                                <div
+                                    class="order-status ${orderStatusClass}"
+                                >
+                                    ${escapeHtml(
+                                        order.status
+                                    )}
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                ${itemsHTML}
+
+                            </div>
+
+
+                            <div class="order-info">
+
+                                <p>
+                                    <strong>
+                                        Estimated Preparation Time:
+                                    </strong>
+
+                                    ${estimated}
+                                </p>
+
+
+                                <p>
+                                    <strong>
+                                        Total:
+                                    </strong>
+
+                                    ₹${Number(
+                                        order.total_price
+                                    ).toFixed(2)}
+                                </p>
+
+
+                                <p>
+                                    <strong>
+                                        Order Time:
+                                    </strong>
+
+                                    ${escapeHtml(
+                                        order.order_time
+                                    )}
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "FACULTY ORDERS ERROR:",
+                error
+            );
+
+
+            container.innerHTML = `
+
+                <div class="no-orders">
+
+                    Unable to load orders.
+
+                    <br><br>
+
+                    Please try again.
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    // ========================================================
+    // ESCAPE HTML
+    // ========================================================
+
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+
+            return "";
+
+        }
+
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    // ========================================================
+    // LOGOUT
+    // ========================================================
+
+    function logout() {
+
+        if (
+            confirm(
+                "Do you want to logout?"
+            )
+        ) {
+
+            window.location.href =
+                "{{ url_for('logout') }}";
+
+        }
+
+    }
+
+
+    // ========================================================
+    // AUTO REFRESH ORDERS
+    // ========================================================
+
+    setInterval(
+        function() {
+
+            loadOrders();
+
+        },
+        10000
+    );
+
+
+</script>
+
+
+</body>
+
+</html>

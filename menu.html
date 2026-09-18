@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Menu - Smart Canteen</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f4f4;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            background: #ff6600;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+
+        header h1 {
+            margin-bottom: 8px;
+        }
+
+
+        header p {
+            color: white;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            width: 92%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+
+        /* =========================
+           CATEGORY
+        ========================= */
+
+        .category {
+            margin-bottom: 35px;
+        }
+
+
+        .category-title {
+            background: #333;
+            color: white;
+
+            padding: 14px 20px;
+
+            border-radius: 8px;
+
+            margin-bottom: 15px;
+
+            font-size: 24px;
+        }
+
+
+        /* =========================
+           FOOD GRID
+        ========================= */
+
+        .menu-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(240px, 1fr)
+                );
+
+            gap: 18px;
+        }
+
+
+        /* =========================
+           FOOD CARD
+        ========================= */
+
+        .food-card {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 0 10px rgba(0, 0, 0, 0.15);
+
+            transition: 0.2s;
+        }
+
+
+        .food-card:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 0 15px rgba(0, 0, 0, 0.25);
+        }
+
+
+        .food-name {
+            font-size: 19px;
+
+            font-weight: bold;
+
+            color: #333;
+
+            margin-bottom: 12px;
+        }
+
+
+        .price {
+            font-size: 18px;
+
+            color: #ff6600;
+
+            font-weight: bold;
+
+            margin-bottom: 15px;
+        }
+
+
+        /* =========================
+           ADD TO CART BUTTON
+        ========================= */
+
+        .add-button {
+            width: 100%;
+
+            padding: 10px;
+
+            background: #ff6600;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 5px;
+
+            font-size: 16px;
+
+            cursor: pointer;
+        }
+
+
+        .add-button:hover {
+            background: #e65c00;
+        }
+
+
+        /* =========================
+           FIXED VIEW CART BUTTON
+        ========================= */
+
+        .cart-container {
+
+            position: fixed;
+
+            right: 20px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            z-index: 1000;
+        }
+
+
+        .cart-button {
+
+            display: inline-block;
+
+            padding: 14px 20px;
+
+            background: #333;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 30px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.3);
+
+            transition: 0.2s;
+        }
+
+
+        .cart-button:hover {
+
+            background: #ff6600;
+
+            transform: scale(1.05);
+        }
+
+
+        /* =========================
+           BACK BUTTON
+        ========================= */
+
+        .back-container {
+
+            text-align: center;
+
+            margin: 30px;
+        }
+
+
+        .back {
+
+            display: inline-block;
+
+            padding: 12px 25px;
+
+            background: #333;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 5px;
+        }
+
+
+        .back:hover {
+
+            background: #555;
+        }
+
+
+        /* =========================
+           EMPTY MENU
+        ========================= */
+
+        .empty {
+
+            background: white;
+
+            padding: 30px;
+
+            text-align: center;
+
+            border-radius: 10px;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .container {
+
+                width: 95%;
+            }
+
+
+            .category-title {
+
+                font-size: 20px;
+            }
+
+
+            .cart-container {
+
+                right: 10px;
+            }
+
+
+            .cart-button {
+
+                padding: 12px 16px;
+
+                font-size: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <img
+        src="{{ url_for(
+            'static',
+            filename='images/logo.jpeg'
+        ) }}"
+        alt="College Logo"
+        class="logo"
+    >
+
+
+    <h1>
+        🍽 Smart Canteen Menu
+    </h1>
+
+
+    <p>
+        Select your food items
+    </p>
+
+</header>
+
+
+
+<!-- =========================
+     MENU
+========================= -->
+
+<div class="container">
+
+
+    {% if menu_items %}
+
+
+        <!-- CREATE CATEGORY LIST -->
+
+        {% set categories = [] %}
+
+
+        {% for item in menu_items %}
+
+            {% if item.category not in categories %}
+
+                {% set _ = categories.append(
+                    item.category
+                ) %}
+
+            {% endif %}
+
+        {% endfor %}
+
+
+
+        <!-- DISPLAY CATEGORIES -->
+
+        {% for category in categories %}
+
+
+            <div class="category">
+
+
+                <div class="category-title">
+
+                    {{ category }}
+
+                </div>
+
+
+
+                <div class="menu-grid">
+
+
+                    {% for item in menu_items %}
+
+
+                        {% if item.category == category %}
+
+
+                            <div class="food-card">
+
+
+                                <!-- FOOD NAME -->
+
+                                <div class="food-name">
+
+                                    {{ item.name }}
+
+                                </div>
+
+
+
+                                <!-- PRICE -->
+
+                                <div class="price">
+
+                                    ₹{{ "%.2f"|format(
+                                        item.price
+                                    ) }}
+
+                                </div>
+
+
+
+                                <!-- ADD TO CART -->
+
+                                <button
+                                    type="button"
+
+                                    class="add-button"
+
+                                    onclick='addToCart(
+                                        {{ item.id }},
+                                        {{ item.name|tojson }},
+                                        {{ item.price }}
+                                    )'
+                                >
+
+                                    ➕ Add to Cart
+
+                                </button>
+
+
+                            </div>
+
+
+                        {% endif %}
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            </div>
+
+
+        {% endfor %}
+
+
+    {% else %}
+
+
+        <!-- NO ITEMS -->
+
+        <div class="empty">
+
+            <h2>
+                No menu items available
+            </h2>
+
+
+            <p>
+                Please contact the canteen administrator.
+            </p>
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- =========================
+     FIXED CART BUTTON
+========================= -->
+
+<div class="cart-container">
+
+   <a
+    href="{{ url_for('cart') }}"
+    class="cart-button"
+>
+
+        🛒 View Cart
+        (<span id="cartCount">0</span>)
+
+    </a>
+
+</div>
+
+
+
+<!-- =========================
+     BACK BUTTON
+========================= -->
+
+<div class="back-container">
+
+    <a
+        href="{{ url_for('student') }}"
+        class="back"
+    >
+
+        ← Back to Student Dashboard
+
+    </a>
+
+</div>
+
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script>
+
+
+    /* =========================
+       GET CART
+    ========================= */
+
+    function getCart() {
+
+        let savedCart =
+            localStorage.getItem(
+                "smartCanteenCart"
+            );
+
+
+        if (savedCart) {
+
+            return JSON.parse(
+                savedCart
+            );
+
+        }
+
+
+        return [];
+
+    }
+
+
+
+    /* =========================
+       SAVE CART
+    ========================= */
+
+    function saveCart(cart) {
+
+        localStorage.setItem(
+
+            "smartCanteenCart",
+
+            JSON.stringify(cart)
+
+        );
+
+    }
+
+
+
+    /* =========================
+       ADD TO CART
+    ========================= */
+
+    function addToCart(
+        id,
+        name,
+        price
+    ) {
+
+
+        let cart = getCart();
+
+
+        /* CHECK EXISTING ITEM */
+
+        let existingItem =
+            cart.find(
+                function(item) {
+
+                    return item.id === id;
+
+                }
+            );
+
+
+        /* IF ITEM ALREADY EXISTS */
+
+        if (existingItem) {
+
+            existingItem.quantity += 1;
+
+        }
+
+
+        /* NEW ITEM */
+
+        else {
+
+            cart.push({
+
+                id: id,
+
+                name: name,
+
+                price: Number(price),
+
+                quantity: 1
+
+            });
+
+        }
+
+
+        /* SAVE */
+
+        saveCart(cart);
+
+
+        /* UPDATE COUNT */
+
+        updateCartCount();
+
+
+        /* MESSAGE */
+
+        alert(
+            name +
+            " added to cart!"
+        );
+
+    }
+
+
+
+    /* =========================
+       UPDATE CART COUNT
+    ========================= */
+
+    function updateCartCount() {
+
+        let cart = getCart();
+
+
+        let count = 0;
+
+
+        cart.forEach(
+            function(item) {
+
+                count += item.quantity;
+
+            }
+        );
+
+
+        document.getElementById(
+            "cartCount"
+        ).textContent = count;
+
+    }
+
+
+
+    /* =========================
+       VIEW CART
+    ========================= */
+
+    function viewCart() {
+
+        let cart = getCart();
+
+
+        if (cart.length === 0) {
+
+            alert(
+                "Your cart is empty."
+            );
+
+            return false;
+
+        }
+
+
+        let message =
+            "Your Cart:\n\n";
+
+
+        let total = 0;
+
+
+        cart.forEach(
+            function(item) {
+
+
+                let itemTotal =
+                    item.price *
+                    item.quantity;
+
+
+                total += itemTotal;
+
+
+                message +=
+
+                    item.name +
+
+                    " × " +
+
+                    item.quantity +
+
+                    " = ₹" +
+
+                    itemTotal.toFixed(2) +
+
+                    "\n";
+
+            }
+        );
+
+
+        message +=
+
+            "\nTotal = ₹" +
+
+            total.toFixed(2);
+
+
+        alert(message);
+
+
+        return false;
+
+    }
+
+
+
+    /* =========================
+       INITIAL CART COUNT
+    ========================= */
+
+    updateCartCount();
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Student Dashboard - Smart Canteen</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f4f4;
+            color: #333;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            position: relative;
+            min-height: 250px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            color: white;
+
+            overflow: hidden;
+        }
+
+
+        header::before {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            background-image:
+                url("{{ url_for(
+                    'static',
+                    filename='images/mvgr-logo.png'
+                ) }}");
+
+            background-size: cover;
+            background-position: center;
+
+            filter: blur(5px);
+
+            transform: scale(1.05);
+
+            z-index: -2;
+        }
+
+
+        header::after {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            background: rgba(0,0,0,0.55);
+
+            z-index: -1;
+        }
+
+
+        .college-logo {
+            width: 110px;
+            height: 110px;
+
+            object-fit: contain;
+
+            margin-bottom: 10px;
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 5px;
+        }
+
+
+        header h1 {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+
+
+        header p {
+            font-size: 17px;
+        }
+
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            width: 94%;
+            max-width: 1100px;
+
+            margin: 30px auto;
+        }
+
+
+        /* =========================
+           WELCOME CARD
+        ========================= */
+
+        .welcome-card {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 0 10px rgba(0,0,0,0.12);
+
+            margin-bottom: 25px;
+
+            text-align: center;
+        }
+
+
+        .welcome-card h2 {
+            color: #ff6600;
+
+            margin-bottom: 8px;
+        }
+
+
+        .welcome-card p {
+            color: #555;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button-row {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+
+        button {
+            padding: 11px 20px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+            color: white;
+
+            background: #ff6600;
+        }
+
+
+        button:hover {
+            background: #e65c00;
+        }
+
+
+        .menu-button {
+            background: #198754;
+        }
+
+
+        .menu-button:hover {
+            background: #146c43;
+        }
+
+
+        .refresh-button {
+            background: #0d6efd;
+        }
+
+
+        .refresh-button:hover {
+            background: #0b5ed7;
+        }
+
+
+        .logout-button {
+            background: #dc3545;
+        }
+
+
+        .logout-button:hover {
+            background: #bb2d3b;
+        }
+
+
+        /* =========================
+           ORDERS SECTION
+        ========================= */
+
+        .orders-section {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 0 10px rgba(0,0,0,0.12);
+        }
+
+
+        .orders-section h2 {
+            color: #ff6600;
+
+            margin-bottom: 8px;
+        }
+
+
+        .orders-section > p {
+            color: #666;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================
+           ORDER CARD
+        ========================= */
+
+        .order-card {
+            border: 1px solid #ddd;
+
+            border-left: 6px solid #ff6600;
+
+            border-radius: 8px;
+
+            background: #fafafa;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .order-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            padding-bottom: 15px;
+
+            margin-bottom: 15px;
+
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .order-id {
+            font-size: 21px;
+
+            font-weight: bold;
+
+            color: #333;
+        }
+
+
+        .order-time {
+            color: #777;
+
+            font-size: 14px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            display: inline-block;
+
+            padding: 6px 12px;
+
+            border-radius: 15px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        .status-pending {
+            background: #fff3cd;
+
+            color: #856404;
+        }
+
+
+        .status-preparing {
+            background: #cfe2ff;
+
+            color: #084298;
+        }
+
+
+        .status-ready {
+            background: #d1e7dd;
+
+            color: #0f5132;
+        }
+
+
+        .status-completed {
+            background: #d3d3d3;
+
+            color: #333;
+        }
+
+
+        .status-cancelled {
+            background: #f8d7da;
+
+            color: #842029;
+        }
+
+
+        /* =========================
+           ORDER SUMMARY
+        ========================= */
+
+        .order-summary {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(160px, 1fr));
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .summary-box {
+            background: white;
+
+            border: 1px solid #ddd;
+
+            border-radius: 6px;
+
+            padding: 12px;
+        }
+
+
+        .summary-box strong {
+            display: block;
+
+            color: #777;
+
+            font-size: 13px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .summary-box span {
+            font-weight: bold;
+
+            color: #333;
+        }
+
+
+        /* =========================
+           ITEMS
+        ========================= */
+
+        .items-title {
+            font-size: 18px;
+
+            font-weight: bold;
+
+            margin-bottom: 12px;
+
+            color: #333;
+        }
+
+
+        .item-card {
+            background: white;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 15px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .item-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .item-name {
+            font-size: 17px;
+
+            font-weight: bold;
+
+            color: #333;
+        }
+
+
+        .item-details {
+            color: #666;
+
+            font-size: 14px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =========================
+           ESTIMATED TIME
+        ========================= */
+
+        .estimated-time {
+            background: #fff3cd;
+
+            border: 1px solid #ffe69c;
+
+            color: #664d03;
+
+            border-radius: 8px;
+
+            padding: 15px;
+
+            margin-top: 15px;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           TOTAL
+        ========================= */
+
+        .order-total {
+            border-top: 1px solid #ddd;
+
+            margin-top: 15px;
+
+            padding-top: 15px;
+
+            font-size: 19px;
+
+            font-weight: bold;
+
+            text-align: right;
+        }
+
+
+        /* =========================
+           EMPTY ORDERS
+        ========================= */
+
+        .no-orders {
+            text-align: center;
+
+            padding: 40px 20px;
+
+            color: #777;
+        }
+
+
+        .no-orders h3 {
+            margin-bottom: 8px;
+        }
+
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            text-align: center;
+
+            padding: 30px;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            text-align: center;
+
+            padding: 25px;
+
+            color: #777;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            header {
+                min-height: 230px;
+            }
+
+
+            header h1 {
+                font-size: 24px;
+            }
+
+
+            header p {
+                font-size: 15px;
+            }
+
+
+            .container {
+                width: 95%;
+            }
+
+
+            .order-header {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .item-row {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .button-row {
+                flex-direction: column;
+            }
+
+
+            .button-row button {
+                width: 100%;
+            }
+
+
+            .order-total {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <img
+        src="{{ url_for(
+            'static',
+            filename='images/mvgr-logo.png'
+        ) }}"
+        class="college-logo"
+        alt="College Logo"
+    >
+
+
+    <h1>
+        🍽 Smart Campus Canteen
+    </h1>
+
+
+    <p>
+        Student Dashboard
+    </p>
+
+</header>
+
+
+
+<div class="container">
+
+
+    <!-- =========================
+         WELCOME
+    ========================= -->
+
+    <div class="welcome-card">
+
+        <h2>
+            Welcome,
+            {{ session.get('student_name', 'Student') }}!
+        </h2>
+
+
+        <p>
+            Manage your canteen orders
+            and track your food preparation status.
+        </p>
+
+
+        <div class="button-row">
+
+            <button
+                class="menu-button"
+                onclick="goToMenu()"
+            >
+                🍽 View Menu
+            </button>
+
+
+            <button
+                class="refresh-button"
+                onclick="loadOrders()"
+            >
+                🔄 Refresh Orders
+            </button>
+
+
+            <button
+                class="logout-button"
+                onclick="logout()"
+            >
+                🚪 Logout
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         MY ORDERS
+    ========================= -->
+
+    <div class="orders-section">
+
+        <h2>
+            📦 My Orders
+        </h2>
+
+
+        <p>
+            Your food items are grouped under
+            their respective Order ID.
+        </p>
+
+
+        <div id="ordersContainer">
+
+            <div class="loading">
+                ⏳ Loading your orders...
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<footer>
+
+    Smart Campus Canteen
+
+</footer>
+
+
+
+<script>
+
+
+/* ========================================================
+   GO TO MENU
+======================================================== */
+
+function goToMenu() {
+
+    window.location.href =
+        "{{ url_for('menu') }}";
+
+}
+
+
+
+/* ========================================================
+   LOAD STUDENT ORDERS
+======================================================== */
+
+async function loadOrders() {
+
+
+    const container =
+        document.getElementById(
+            "ordersContainer"
+        );
+
+
+    container.innerHTML = `
+
+        <div class="loading">
+
+            ⏳ Loading your orders...
+
+        </div>
+
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "{{ url_for('student_orders') }}"
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            container.innerHTML = `
+
+                <div class="no-orders">
+
+                    <h3>
+                        ⚠ Unable to Load Orders
+                    </h3>
+
+                    <p>
+                        ${
+                            result.message ||
+                            "Please try again."
+                        }
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        displayOrders(
+            result.orders
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        container.innerHTML = `
+
+            <div class="no-orders">
+
+                <h3>
+                    ⚠ Connection Error
+                </h3>
+
+                <p>
+                    Unable to connect to the server.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+/* ========================================================
+   DISPLAY ORDERS
+======================================================== */
+
+function displayOrders(orders) {
+
+
+    const container =
+        document.getElementById(
+            "ordersContainer"
+        );
+
+
+    if (
+        !orders ||
+        orders.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="no-orders">
+
+                <h3>
+                    📭 No Orders Yet
+                </h3>
+
+                <p>
+                    You have not placed any
+                    canteen orders yet.
+                </p>
+
+
+                <button
+                    class="menu-button"
+                    onclick="goToMenu()"
+                >
+                    🍽 Browse Menu
+                </button>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    orders.forEach(
+        function(order) {
+
+
+            /* =========================
+               OVERALL STATUS CLASS
+            ========================= */
+
+            let statusClass =
+                getStatusClass(
+                    order.status
+                );
+
+
+
+            /* =========================
+               ITEMS
+            ========================= */
+
+            let itemsHTML = "";
+
+
+            if (
+                order.items &&
+                order.items.length > 0
+            ) {
+
+
+                order.items.forEach(
+                    function(item) {
+
+
+                        const itemStatusClass =
+                            getStatusClass(
+                                item.status
+                            );
+
+
+                        itemsHTML += `
+
+                            <div class="item-card">
+
+                                <div class="item-row">
+
+
+                                    <div>
+
+                                        <div class="item-name">
+
+                                            ${escapeHTML(
+                                                item.food_item
+                                            )}
+
+                                        </div>
+
+
+                                        <div class="item-details">
+
+                                            Quantity:
+                                            <strong>
+                                                ${item.quantity}
+                                            </strong>
+
+                                            &nbsp; | &nbsp;
+
+                                            Price:
+                                            <strong>
+                                                ₹${Number(
+                                                    item.price
+                                                ).toFixed(2)}
+                                            </strong>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span
+                                            class="
+                                                status
+                                                ${itemStatusClass}
+                                            "
+                                        >
+
+                                            ${escapeHTML(
+                                                item.status
+                                            )}
+
+                                        </span>
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+            }
+            else {
+
+                itemsHTML = `
+
+                    <p>
+                        No individual items available.
+                    </p>
+
+                `;
+
+            }
+
+
+
+            /* =========================
+               ESTIMATED TIME
+            ========================= */
+
+            let estimatedHTML = "";
+
+
+            if (
+                order.estimated_time
+            ) {
+
+                estimatedHTML = `
+
+                    <div class="estimated-time">
+
+                        ⏱ Estimated Preparation Time:
+                        ${order.estimated_time}
+                        minutes
+
+                    </div>
+
+                `;
+
+            }
+            else {
+
+                estimatedHTML = `
+
+                    <div class="estimated-time">
+
+                        ⏱ Estimated Preparation Time:
+                        Waiting for admin to set time
+
+                    </div>
+
+                `;
+
+            }
+
+
+
+            /* =========================
+               ORDER CARD
+            ========================= */
+
+            html += `
+
+                <div class="order-card">
+
+
+                    <!-- ORDER HEADER -->
+
+                    <div class="order-header">
+
+                        <div>
+
+                            <div class="order-id">
+
+                                Order #${order.id}
+
+                            </div>
+
+
+                            <div class="order-time">
+
+                                🕒
+                                ${escapeHTML(
+                                    order.order_time
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <span
+                                class="
+                                    status
+                                    ${statusClass}
+                                "
+                            >
+
+                                ${escapeHTML(
+                                    order.status
+                                )}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ORDER SUMMARY -->
+
+                    <div class="order-summary">
+
+
+                        <div class="summary-box">
+
+                            <strong>
+                                Total Items
+                            </strong>
+
+                            <span>
+
+                                ${
+                                    order.items
+                                    ?
+                                    order.items.length
+                                    :
+                                    0
+                                }
+
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="summary-box">
+
+                            <strong>
+                                Total Quantity
+                            </strong>
+
+                            <span>
+
+                                ${
+                                    order.quantity || 0
+                                }
+
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="summary-box">
+
+                            <strong>
+                                Overall Status
+                            </strong>
+
+                            <span>
+
+                                ${escapeHTML(
+                                    order.status
+                                )}
+
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="summary-box">
+
+                            <strong>
+                                Order Total
+                            </strong>
+
+                            <span>
+
+                                ₹${Number(
+                                    order.total_price
+                                ).toFixed(2)}
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- ITEMS -->
+
+                    <div class="items-title">
+
+                        🍽 Items in Order #${order.id}
+
+                    </div>
+
+
+                    ${itemsHTML}
+
+
+
+                    <!-- ESTIMATED TIME -->
+
+                    ${estimatedHTML}
+
+
+
+                    <!-- TOTAL -->
+
+                    <div class="order-total">
+
+                        Total:
+                        ₹${Number(
+                            order.total_price
+                        ).toFixed(2)}
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+
+/* ========================================================
+   STATUS CLASS
+======================================================== */
+
+function getStatusClass(status) {
+
+
+    if (
+        status === "Preparing"
+    ) {
+
+        return "status-preparing";
+
+    }
+
+
+    if (
+        status === "Ready"
+    ) {
+
+        return "status-ready";
+
+    }
+
+
+    if (
+        status === "Completed"
+    ) {
+
+        return "status-completed";
+
+    }
+
+
+    if (
+        status === "Cancelled"
+    ) {
+
+        return "status-cancelled";
+
+    }
+
+
+    return "status-pending";
+
+}
+
+
+
+/* ========================================================
+   HTML ESCAPE
+======================================================== */
+
+function escapeHTML(value) {
+
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* ========================================================
+   LOGOUT
+======================================================== */
+
+function logout() {
+
+
+    if (
+        confirm(
+            "Do you want to logout?"
+        )
+    ) {
+
+        window.location.href =
+            "{{ url_for('logout') }}";
+
+    }
+
+}
+
+
+
+/* ========================================================
+   INITIAL LOAD
+======================================================== */
+
+loadOrders();
+
+
+
+/* ========================================================
+   AUTO REFRESH EVERY 10 SECONDS
+======================================================== */
+
+setInterval(
+    function() {
+
+        loadOrders();
+
+    },
+    10000
+);
+
+
+</script>
+
+
+</body>
+
+</html>
