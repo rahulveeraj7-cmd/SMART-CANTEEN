@@ -1,36 +1,53 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+import os
+
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    jsonify
+)
+
 import mysql.connector
 from werkzeug.security import check_password_hash
 
+
 app = Flask(__name__)
-app.secret_key = "smart_canteen_secret_key"
+
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "smart_canteen_secret_key"
+)
 
 
-# =========================
+# ==========================================================
 # DATABASE CONNECTION
-# =========================
+# ==========================================================
 
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",   # Keep your actual MySQL password here
-        database="smart_canteen"
+        host=os.environ.get("DB_HOST", "localhost"),
+        port=int(os.environ.get("DB_PORT", 3306)),
+        user=os.environ.get("DB_USER", "root"),
+        password=os.environ.get("DB_PASSWORD", "password"),
+        database=os.environ.get("DB_NAME", "smart_canteen")
     )
 
 
-# =========================
+# ==========================================================
 # HOME
-# =========================
+# ==========================================================
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# =========================
+# ==========================================================
 # LOGIN
-# =========================
+# ==========================================================
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -59,7 +76,10 @@ def login():
         cursor.close()
         conn.close()
 
-        if user and check_password_hash(user["password_hash"], password):
+        if user and check_password_hash(
+            user["password_hash"],
+            password
+        ):
 
             session["college_id"] = user["college_id"]
             session["user_type"] = user["user_type"]
@@ -89,9 +109,9 @@ def login():
     return render_template("login.html")
 
 
-# =========================
+# ==========================================================
 # STUDENT DASHBOARD
-# =========================
+# ==========================================================
 
 @app.route("/student")
 def student():
@@ -108,9 +128,9 @@ def student():
     )
 
 
-# =========================
+# ==========================================================
 # STUDENT ORDERS
-# =========================
+# ==========================================================
 
 @app.route("/student_orders")
 def student_orders():
@@ -190,9 +210,9 @@ def student_orders():
     })
 
 
-# =========================
+# ==========================================================
 # FACULTY DASHBOARD
-# =========================
+# ==========================================================
 
 @app.route("/faculty")
 def faculty():
@@ -206,9 +226,9 @@ def faculty():
     return render_template("faculty.html")
 
 
-# =========================
+# ==========================================================
 # FACULTY ORDERS
-# =========================
+# ==========================================================
 
 @app.route("/faculty_orders")
 def faculty_orders():
@@ -288,9 +308,9 @@ def faculty_orders():
     })
 
 
-# =========================
+# ==========================================================
 # ADMIN DASHBOARD
-# =========================
+# ==========================================================
 
 @app.route("/admin")
 def admin():
@@ -358,7 +378,10 @@ def admin_menu():
         "college_id" not in session
         or session.get("user_type") != "admin"
     ):
-        return redirect(url_for("login"))
+        return jsonify({
+            "success": False,
+            "message": "Unauthorized"
+        }), 403
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -847,7 +870,6 @@ def place_order():
                 "message": "No valid items in cart."
             }), 400
 
-        # Create ONE main order
         cursor.execute(
             """
             INSERT INTO orders
@@ -879,7 +901,6 @@ def place_order():
 
         order_id = cursor.lastrowid
 
-        # Insert each food item
         for item in validated_items:
 
             cursor.execute(
@@ -920,7 +941,7 @@ def place_order():
             "order_id": order_id
         })
 
-    except Exception as e:
+    except Exception:
 
         conn.rollback()
 
@@ -1223,7 +1244,6 @@ def update_order_item():
 
     order_id = item["order_id"]
 
-    # Update item status
     cursor.execute(
         """
         UPDATE order_items
@@ -1236,7 +1256,6 @@ def update_order_item():
         )
     )
 
-    # Get all item statuses
     cursor.execute(
         """
         SELECT status
@@ -1253,7 +1272,6 @@ def update_order_item():
         for item in items
     ]
 
-    # Determine overall order status
     if statuses and all(
         item_status == "Completed"
         for item_status in statuses
