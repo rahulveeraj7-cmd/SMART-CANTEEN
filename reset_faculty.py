@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 conn = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="YOUR_LOCAL_MYSQL_PASSWORD",
+    password="password",
     database="smart_canteen"
 )
 
