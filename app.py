@@ -16,6 +16,7 @@ from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 
+
 app.secret_key = os.environ.get(
     "SECRET_KEY",
     "smart_canteen_secret_key"
@@ -32,7 +33,7 @@ def get_db_connection():
         port=int(os.environ.get("DB_PORT", 3306)),
         user=os.environ.get("DB_USER", "root"),
         password=os.environ.get("DB_PASSWORD", "password"),
-        database=os.environ.get("DB_NAME", "smart_canteen")
+        database=os.environ.get("DB_NAME", "smart-canteen")
     )
 
 
@@ -952,6 +953,119 @@ def place_order():
             "success": False,
             "message": "Failed to place order."
         }), 500
+
+
+# ==========================================================
+# CANCEL ORDER - STUDENT & FACULTY
+# ==========================================================
+
+@app.route("/cancel_order", methods=["POST"])
+def cancel_order():
+
+    if (
+        "college_id" not in session
+        or session.get("user_type") not in [
+            "student",
+            "faculty"
+        ]
+    ):
+        return jsonify({
+            "success": False,
+            "message": "Unauthorized"
+        }), 403
+
+    data = request.get_json()
+
+    if not data or not data.get("order_id"):
+
+        return jsonify({
+            "success": False,
+            "message": "Order ID is required."
+        }), 400
+
+    order_id = data.get("order_id")
+    college_id = session["college_id"]
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                status
+            FROM orders
+            WHERE id = %s
+            AND college_id = %s
+            """,
+            (
+                order_id,
+                college_id
+            )
+        )
+
+        order = cursor.fetchone()
+
+        if not order:
+
+            return jsonify({
+                "success": False,
+                "message": "Order not found."
+            }), 404
+
+        if order["status"] != "Pending":
+
+            return jsonify({
+                "success": False,
+                "message": "Only Pending orders can be cancelled."
+            }), 400
+
+        cursor.execute(
+            """
+            UPDATE orders
+            SET
+                status = 'Cancelled',
+                estimated_time = NULL
+            WHERE id = %s
+            AND college_id = %s
+            """,
+            (
+                order_id,
+                college_id
+            )
+        )
+
+        cursor.execute(
+            """
+            UPDATE order_items
+            SET status = 'Cancelled'
+            WHERE order_id = %s
+            """,
+            (order_id,)
+        )
+
+        conn.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Order cancelled successfully."
+        })
+
+    except Exception:
+
+        conn.rollback()
+
+        return jsonify({
+            "success": False,
+            "message": "Failed to cancel order."
+        }), 500
+
+    finally:
+
+        cursor.close()
+        conn.close()
 
 
 # ==========================================================
