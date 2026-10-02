@@ -141,6 +141,21 @@
         }
 
 
+        /* =========================
+           CANCEL BUTTON
+        ========================= */
+
+        .cancel-button {
+            background: #dc3545;
+            margin-top: 15px;
+        }
+
+
+        .cancel-button:hover {
+            background: #bb2d3b;
+        }
+
+
         .orders-section {
             margin-top: 10px;
         }
@@ -288,6 +303,10 @@
 
             .order-card {
                 padding: 15px;
+            }
+
+            .cancel-button {
+                width: 100%;
             }
 
         }
@@ -606,6 +625,32 @@
                         : "Not specified";
 
 
+                    /* =================================================
+                       CANCEL BUTTON
+                       Only Pending orders can be cancelled
+                    ================================================= */
+
+                    let cancelHTML = "";
+
+
+                    if (
+                        order.status === "Pending"
+                    ) {
+
+                        cancelHTML = `
+
+                            <button
+                                class="cancel-button"
+                                onclick="cancelOrder(${order.id})"
+                            >
+                                ❌ Cancel Order
+                            </button>
+
+                        `;
+
+                    }
+
+
                     container.innerHTML += `
 
                         <div class="order-card">
@@ -669,6 +714,9 @@
                                 </p>
 
                             </div>
+
+
+                            ${cancelHTML}
 
 
                         </div>
@@ -741,6 +789,90 @@
                 /'/g,
                 "&#039;"
             );
+
+    }
+
+
+    // ========================================================
+    // CANCEL ORDER
+    // ========================================================
+
+    async function cancelOrder(orderId) {
+
+        if (
+            !confirm(
+                "Are you sure you want to cancel Order #" +
+                orderId +
+                "?"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "{{ url_for('cancel_order') }}",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            order_id: orderId
+                        })
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (
+                response.ok &&
+                result.success
+            ) {
+
+                alert(
+                    "Order #" +
+                    orderId +
+                    " cancelled successfully."
+                );
+
+
+                loadOrders();
+
+            }
+            else {
+
+                alert(
+                    result.message ||
+                    "Unable to cancel the order."
+                );
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(
+                "CANCEL ORDER ERROR:",
+                error
+            );
+
+
+            alert(
+                "Connection error. Please try again."
+            );
+
+        }
 
     }
 
