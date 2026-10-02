@@ -369,11 +369,27 @@ def menu():
 
 
 # ==========================================================
-# ADMIN MENU MANAGEMENT
+# ADMIN MENU PAGE
 # ==========================================================
 
 @app.route("/admin_menu")
 def admin_menu():
+
+    if (
+        "college_id" not in session
+        or session.get("user_type") != "admin"
+    ):
+        return redirect(url_for("login"))
+
+    return render_template("admin_menu.html")
+
+
+# ==========================================================
+# ADMIN MENU DATA
+# ==========================================================
+
+@app.route("/admin_menu_data")
+def admin_menu_data():
 
     if (
         "college_id" not in session
