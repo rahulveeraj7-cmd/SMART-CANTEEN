@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Manage Menu - Smart Canteen</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f4f4f4;
+            color: #333;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        header {
+            position: relative;
+
+            min-height: 250px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            color: white;
+
+            overflow: hidden;
+
+            background-image: url("{{ url_for(
+                'static',
+                filename='images/logo.jpeg'
+            ) }}");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+        }
+
+
+        header::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.50);
+
+            z-index: 0;
+        }
+
+
+        header h1,
+        header h3 {
+            position: relative;
+
+            z-index: 1;
+
+            text-shadow:
+                0 2px 5px rgba(0,0,0,0.6);
+        }
+
+
+        header h1 {
+            font-size: 36px;
+
+            margin-bottom: 5px;
+        }
+
+
+        header h3 {
+            font-size: 21px;
+
+            font-weight: normal;
+        }
+
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            width: 94%;
+
+            max-width: 1200px;
+
+            margin: 30px auto;
+        }
+
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: white;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 0 10px rgba(0,0,0,0.15);
+        }
+
+
+        .card h2 {
+            color: #ff6600;
+
+            margin-bottom: 10px;
+        }
+
+
+        .card p {
+            color: #666;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        button {
+            border: none;
+
+            border-radius: 5px;
+
+            padding: 10px 16px;
+
+            color: white;
+
+            font-size: 14px;
+
+            cursor: pointer;
+        }
+
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+
+        .add-btn {
+            background: #198754;
+        }
+
+
+        .edit-btn {
+            background: #0d6efd;
+        }
+
+
+        .toggle-btn {
+            background: #6f42c1;
+        }
+
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+
+        .back-btn {
+            background: #6c757d;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            display: none;
+
+            padding: 12px;
+
+            margin-bottom: 20px;
+
+            border-radius: 6px;
+
+            font-weight: bold;
+        }
+
+
+        .success {
+            background: #d1e7dd;
+
+            color: #0f5132;
+        }
+
+
+        .error {
+            background: #f8d7da;
+
+            color: #842029;
+        }
+
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .form-group {
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .form-group label {
+            font-weight: bold;
+
+            margin-bottom: 6px;
+
+            color: #444;
+        }
+
+
+        .form-group input,
+        .form-group select {
+            padding: 11px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 5px;
+
+            font-size: 15px;
+        }
+
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+
+            border-color: #ff6600;
+        }
+
+
+        .form-actions {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 15px;
+
+            min-width: 750px;
+        }
+
+
+        th {
+            background: #333;
+
+            color: white;
+
+            padding: 13px;
+
+            text-align: left;
+        }
+
+
+        td {
+            padding: 13px;
+
+            border-bottom: 1px solid #ddd;
+
+            vertical-align: middle;
+        }
+
+
+        tr:hover {
+            background: #f8f8f8;
+        }
+
+
+        .available {
+            display: inline-block;
+
+            padding: 5px 10px;
+
+            border-radius: 15px;
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        .unavailable {
+            display: inline-block;
+
+            padding: 5px 10px;
+
+            border-radius: 15px;
+
+            background: #f8d7da;
+
+            color: #842029;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        .actions {
+            display: flex;
+
+            gap: 7px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .actions button {
+            padding: 7px 11px;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           NO ITEMS
+        ========================= */
+
+        .no-items {
+            text-align: center;
+
+            padding: 40px 20px;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            text-align: center;
+
+            padding: 30px;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            header {
+                min-height: 220px;
+            }
+
+
+            header h1 {
+                font-size: 28px;
+            }
+
+
+            header h3 {
+                font-size: 18px;
+            }
+
+
+            .container {
+                width: 95%;
+            }
+
+
+            .card {
+                padding: 18px;
+            }
+
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .actions {
+                flex-direction: column;
+            }
+
+
+            .actions button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+    <h1>
+        🍽 Smart Canteen
+    </h1>
+
+
+    <h3>
+        Manage Menu
+    </h3>
+
+</header>
+
+
+
+<div class="container">
+
+
+    <!-- =========================
+         BACK BUTTON
+    ========================= -->
+
+    <div class="card">
+
+        <button
+            class="back-btn"
+            onclick="window.location.href='{{ url_for('admin') }}'"
+        >
+            ← Back to Admin Dashboard
+        </button>
+
+    </div>
+
+
+
+    <!-- =========================
+         MESSAGE
+    ========================= -->
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+
+    <!-- =========================
+         ADD MENU ITEM
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            ➕ Add New Menu Item
+        </h2>
+
+
+        <p>
+            Add a new food item to the canteen menu.
+        </p>
+
+
+        <form
+            id="addForm"
+            onsubmit="addMenuItem(event)"
+        >
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="addName">
+                        Food Name
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="addName"
+                        placeholder="Enter food name"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="addCategory">
+                        Category
+                    </label>
+
+
+                    <select
+                        id="addCategory"
+                        required
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option value="Breakfast">
+                            Breakfast
+                        </option>
+
+                        <option value="Combo Tiffin">
+                            Combo Tiffin
+                        </option>
+
+                        <option value="Lunch">
+                            Lunch
+                        </option>
+
+                        <option value="Curries">
+                            Curries
+                        </option>
+
+                        <option value="Snacks">
+                            Snacks
+                        </option>
+
+                        <option value="Burgers">
+                            Burgers
+                        </option>
+
+                        <option value="Cakes">
+                            Cakes
+                        </option>
+
+                        <option value="Pastries">
+                            Pastries
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="addPrice">
+                        Price (₹)
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="addPrice"
+                        min="0"
+                        step="0.01"
+                        placeholder="Enter price"
+                        required
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="add-btn"
+                >
+                    ➕ Add Food Item
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+
+
+    <!-- =========================
+         MENU LIST
+    ========================= -->
+
+    <div class="card">
+
+        <h2>
+            📋 Current Menu
+        </h2>
+
+
+        <p>
+            Manage food items, prices, categories,
+            and availability.
+        </p>
+
+
+        <div
+            id="menuContainer"
+            class="loading"
+        >
+
+            ⏳ Loading menu...
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* ========================================================
+   LOAD MENU
+======================================================== */
+
+async function loadMenu() {
+
+
+    const container =
+        document.getElementById(
+            "menuContainer"
+        );
+
+
+    container.innerHTML = `
+
+        <div class="loading">
+
+            ⏳ Loading menu...
+
+        </div>
+
+    `;
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "{{ url_for('admin_menu') }}"
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+
+            container.innerHTML = `
+
+                <div class="no-items">
+
+                    <h3>
+                        ⚠ Unable to Load Menu
+                    </h3>
+
+                    <p>
+                        ${
+                            result.message ||
+                            "Please try again."
+                        }
+                    </p>
+
+                </div>
+
+            `;
+
+
+            showMessage(
+                result.message ||
+                "Unable to load menu.",
+                "error"
+            );
+
+
+            return;
+
+        }
+
+
+        displayMenu(
+            result.menu_items
+        );
+
+
+    }
+    catch (error) {
+
+
+        console.error(error);
+
+
+        container.innerHTML = `
+
+            <div class="no-items">
+
+                <h3>
+                    ⚠ Connection Error
+                </h3>
+
+                <p>
+                    Unable to connect to the server.
+                </p>
+
+            </div>
+
+        `;
+
+
+        showMessage(
+            "Unable to connect to the server.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* ========================================================
+   DISPLAY MENU
+======================================================== */
+
+function displayMenu(
+    menuItems
+) {
+
+
+    const container =
+        document.getElementById(
+            "menuContainer"
+        );
+
+
+    if (
+        !menuItems ||
+        menuItems.length === 0
+    ) {
+
+
+        container.innerHTML = `
+
+            <div class="no-items">
+
+                <h3>
+                    📭 No Menu Items
+                </h3>
+
+                <p>
+                    Add your first food item above.
+                </p>
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    let html = `
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Food Name
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Availability
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+    `;
+
+
+    menuItems.forEach(
+        function(item) {
+
+
+            const availabilityHTML =
+                item.available
+                ?
+
+                `
+                    <span class="available">
+                        🟢 Available
+                    </span>
+                `
+
+                :
+
+                `
+                    <span class="unavailable">
+                        🔴 Unavailable
+                    </span>
+                `;
+
+
+            html += `
+
+                <tr>
+
+
+                    <td>
+                        ${item.id}
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            ${escapeHTML(
+                                item.name
+                            )}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+                        ${escapeHTML(
+                            item.category
+                        )}
+                    </td>
+
+
+                    <td>
+                        ₹${Number(
+                            item.price
+                        ).toFixed(2)}
+                    </td>
+
+
+                    <td>
+                        ${availabilityHTML}
+                    </td>
+
+
+                    <td>
+
+                        <div class="actions">
+
+
+                            <button
+                                class="edit-btn"
+                                onclick="
+                                    editMenuItem(
+                                        ${item.id},
+                                        '${escapeJS(item.name)}',
+                                        '${escapeJS(item.category)}',
+                                        ${Number(item.price)}
+                                    )
+                                "
+                            >
+                                ✏️ Edit
+                            </button>
+
+
+                            <button
+                                class="toggle-btn"
+                                onclick="
+                                    toggleMenuItem(
+                                        ${item.id}
+                                    )
+                                "
+                            >
+
+                                ${
+                                    item.available
+                                    ?
+                                    "🔴 Make Unavailable"
+                                    :
+                                    "🟢 Make Available"
+                                }
+
+                            </button>
+
+
+                            <button
+                                class="delete-btn"
+                                onclick="
+                                    deleteMenuItem(
+                                        ${item.id},
+                                        '${escapeJS(item.name)}'
+                                    )
+                                "
+                            >
+                                🗑️ Delete
+                            </button>
+
+
+                        </div>
+
+                    </td>
+
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    `;
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+
+/* ========================================================
+   ADD MENU ITEM
+======================================================== */
+
+async function addMenuItem(
+    event
+) {
+
+
+    event.preventDefault();
+
+
+    const name =
+        document.getElementById(
+            "addName"
+        ).value.trim();
+
+
+    const category =
+        document.getElementById(
+            "addCategory"
+        ).value;
+
+
+    const price =
+        document.getElementById(
+            "addPrice"
+        ).value;
+
+
+    if (
+        !name ||
+        !category ||
+        price === ""
+    ) {
+
+
+        showMessage(
+            "Please fill all fields.",
+            "error"
+        );
+
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "{{ url_for('add_menu_item') }}",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        name:
+                            name,
+
+                        category:
+                            category,
+
+                        price:
+                            Number(price)
+
+                    })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            response.ok &&
+            result.success
+        ) {
+
+
+            showMessage(
+                "Menu item added successfully.",
+                "success"
+            );
+
+
+            document.getElementById(
+                "addForm"
+            ).reset();
+
+
+            loadMenu();
+
+        }
+        else {
+
+
+            showMessage(
+                result.message ||
+                "Unable to add menu item.",
+                "error"
+            );
+
+        }
+
+    }
+    catch (error) {
+
+
+        console.error(error);
+
+
+        showMessage(
+            "Error adding menu item.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* ========================================================
+   EDIT MENU ITEM
+======================================================== */
+
+async function editMenuItem(
+    itemId,
+    currentName,
+    currentCategory,
+    currentPrice
+) {
+
+
+    const newName =
+        prompt(
+            "Enter food name:",
+            currentName
+        );
+
+
+    if (
+        newName === null
+    ) {
+
+        return;
+
+    }
+
+
+    const trimmedName =
+        newName.trim();
+
+
+    if (
+        !trimmedName
+    ) {
+
+
+        showMessage(
+            "Food name cannot be empty.",
+            "error"
+        );
+
+
+        return;
+
+    }
+
+
+    const newCategory =
+        prompt(
+            "Enter category:",
+            currentCategory
+        );
+
+
+    if (
+        newCategory === null
+    ) {
+
+        return;
+
+    }
+
+
+    const trimmedCategory =
+        newCategory.trim();
+
+
+    if (
+        !trimmedCategory
+    ) {
+
+
+        showMessage(
+            "Category cannot be empty.",
+            "error"
+        );
+
+
+        return;
+
+    }
+
+
+    const newPrice =
+        prompt(
+            "Enter price:",
+            currentPrice
+        );
+
+
+    if (
+        newPrice === null
+    ) {
+
+        return;
+
+    }
+
+
+    const price =
+        Number(newPrice);
+
+
+    if (
+        isNaN(price) ||
+        price < 0
+    ) {
+
+
+        showMessage(
+            "Please enter a valid price.",
+            "error"
+        );
+
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                `/admin_menu/edit/${itemId}`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        name:
+                            trimmedName,
+
+                        category:
+                            trimmedCategory,
+
+                        price:
+                            price
+
+                    })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            response.ok &&
+            result.success
+        ) {
+
+
+            showMessage(
+                "Menu item updated successfully.",
+                "success"
+            );
+
+
+            loadMenu();
+
+        }
+        else {
+
+
+            showMessage(
+                result.message ||
+                "Unable to update menu item.",
+                "error"
+            );
+
+        }
+
+    }
+    catch (error) {
+
+
+        console.error(error);
+
+
+        showMessage(
+            "Error updating menu item.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* ========================================================
+   TOGGLE AVAILABILITY
+======================================================== */
+
+async function toggleMenuItem(
+    itemId
+) {
+
+
+    if (
+        !confirm(
+            "Change the availability of this food item?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                `/admin_menu/toggle/${itemId}`,
+                {
+
+                    method: "POST"
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            response.ok &&
+            result.success
+        ) {
+
+
+            showMessage(
+                result.message ||
+                "Availability updated.",
+                "success"
+            );
+
+
+            loadMenu();
+
+        }
+        else {
+
+
+            showMessage(
+                result.message ||
+                "Unable to change availability.",
+                "error"
+            );
+
+        }
+
+    }
+    catch (error) {
+
+
+        console.error(error);
+
+
+        showMessage(
+            "Error changing availability.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* ========================================================
+   DELETE MENU ITEM
+======================================================== */
+
+async function deleteMenuItem(
+    itemId,
+    itemName
+) {
+
+
+    if (
+        !confirm(
+            "Are you sure you want to delete '" +
+            itemName +
+            "'?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                `/admin_menu/delete/${itemId}`,
+                {
+
+                    method: "POST"
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            response.ok &&
+            result.success
+        ) {
+
+
+            showMessage(
+                "Menu item deleted successfully.",
+                "success"
+            );
+
+
+            loadMenu();
+
+        }
+        else {
+
+
+            showMessage(
+                result.message ||
+                "Unable to delete menu item.",
+                "error"
+            );
+
+        }
+
+    }
+    catch (error) {
+
+
+        console.error(error);
+
+
+        showMessage(
+            "Error deleting menu item.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* ========================================================
+   MESSAGE
+======================================================== */
+
+function showMessage(
+    message,
+    type
+) {
+
+
+    const element =
+        document.getElementById(
+            "message"
+        );
+
+
+    element.textContent =
+        message;
+
+
+    element.className =
+        "message " + type;
+
+
+    element.style.display =
+        "block";
+
+
+    setTimeout(
+        function() {
+
+            element.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+
+
+/* ========================================================
+   HTML ESCAPE
+======================================================== */
+
+function escapeHTML(
+    value
+) {
+
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* ========================================================
+   JAVASCRIPT ESCAPE
+======================================================== */
+
+function escapeJS(
+    value
+) {
+
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+
+        .replace(
+            /'/g,
+            "\\'"
+        )
+
+        .replace(
+            /"/g,
+            '\\"'
+        )
+
+        .replace(
+            /\n/g,
+            "\\n"
+        )
+
+        .replace(
+            /\r/g,
+            "\\r"
+        );
+
+}
+
+
+
+/* ========================================================
+   INITIAL LOAD
+======================================================== */
+
+loadMenu();
+
+
+</script>
+
+
+</body>
+
+</html>
